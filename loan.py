@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-#import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression,LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
@@ -11,14 +10,13 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.svm import SVC,LinearSVC
 
-
-
-
+#import dataset
 train=pd.read_csv("train.csv")
 test=pd.read_csv("test.csv")
 train_original=train.copy()
 test_original=test.copy()
 
+#Filling empty values
 train['Gender'].fillna(train['Gender'].mode()[0], inplace=True)
 train['Married'].fillna(train['Married'].mode()[0], inplace=True)
 train['Dependents'].fillna(train['Dependents'].mode()[0], inplace=True)
@@ -26,7 +24,6 @@ train['Self_Employed'].fillna(train['Self_Employed'].mode()[0], inplace=True)
 train['Credit_History'].fillna(train['Credit_History'].mode()[0], inplace=True)
 train['Loan_Amount_Term'].fillna(train['Loan_Amount_Term'].mode()[0], inplace=True)
 train['LoanAmount'].fillna(train['LoanAmount'].median(), inplace=True)
-
 
 test['Gender'].fillna(train['Gender'].mode()[0], inplace=True)
 test['Dependents'].fillna(train['Dependents'].mode()[0], inplace=True)
@@ -36,11 +33,12 @@ test['Loan_Amount_Term'].fillna(train['Loan_Amount_Term'].mode()[0], inplace=Tru
 test['LoanAmount'].fillna(train['LoanAmount'].median(), inplace=True)
 
 
+#Normalizing LoanAmount data
 train['LoanAmount_log'] = np.log(train['LoanAmount'])
 test['LoanAmount_log'] = np.log(test['LoanAmount'])
 
 
-
+#creating new feature
 train['EMI']=train['LoanAmount']/train['Loan_Amount_Term']
 test['EMI']=test['LoanAmount']/test['Loan_Amount_Term']
 
@@ -54,6 +52,8 @@ test['Total_Income_log'] = np.log(test['Total_Income'])
 train['Balance Income']=train['Total_Income']-(train['EMI']*1000) # Multiply with 1000 to make the units equal
 test['Balance Income']=test['Total_Income']-(test['EMI']*1000)
 
+
+#Dropping irrelevent features
 train=train.drop(['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term'], axis=1)
 test=test.drop(['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term'], axis=1)
 
