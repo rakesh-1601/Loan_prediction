@@ -106,11 +106,6 @@ print(np.array(list).mean())
 importances=pd.Series(model.feature_importances_, index=X.columns)
 importances.plot(kind='barh', figsize=(12,8))
 
-submission=pd.read_csv("Sample_Submission_ZAuTl8O_FK3zQHh.csv")
-submission['Loan_Status']=pred_test
-submission['Loan_ID']=test_original['Loan_ID']
 
-submission['Loan_Status'].replace(0, 'N',inplace=True)
-submission['Loan_Status'].replace(1, 'Y',inplace=True)
 
 plt.show()
