@@ -67,7 +67,6 @@ train=train.drop('Loan_Status',axis=1)
 train=pd.get_dummies(train)
 test=pd.get_dummies(test)
 
-print(train.shape,test.shape)
 
 train['Individual']=train['Dependents_1']+train['Dependents_2']+train['Dependents_3+']
 test['Individual']=test['Dependents_1']+test['Dependents_2']+test['Dependents_3+']
@@ -75,15 +74,15 @@ test['Individual']=test['Dependents_1']+test['Dependents_2']+test['Dependents_3+
 
 train=train.drop(['Gender_Male','Gender_Female','Property_Area_Urban','Total_Income_log','Property_Area_Semiurban','Property_Area_Rural','Dependents_1', 'Dependents_2', 'Dependents_3+','Dependents_0','Individual','Married_Yes','Married_No','Self_Employed_Yes','Self_Employed_No','Education_Graduate','Education_Not Graduate'], axis=1)
 test=test.drop(['Gender_Male','Gender_Female','Property_Area_Urban','Total_Income_log','Property_Area_Semiurban','Property_Area_Rural','Dependents_1', 'Dependents_2', 'Dependents_3+','Dependents_0','Individual','Married_Yes','Married_No','Self_Employed_Yes','Self_Employed_No','Education_Graduate','Education_Not Graduate'], axis=1)
-#print(train.Individual[6],train.Dependents_0[6])
 
 X = train
-
-
-model = XGBClassifier()
+model = XGBClassifier()# Random forest can also be used
+#fitting model
 model.fit(X,y)
 list=[]
 i = 1
+
+#K fold cross validation..!!!
 kf = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
 for train_index, test_index in kf.split(X, y):
     xtr, xvl = X.loc[train_index], X.loc[test_index]
@@ -94,9 +93,14 @@ for train_index, test_index in kf.split(X, y):
     score = accuracy_score(yvl, pred_test)
     list.append(score)
     i += 1
+    
+#predicting prices    
 pred_test = model.predict(test)
 print(np.array(list).mean())
 
+
+
+#Just a graph of knowing importance of feature as per selected model
 importances=pd.Series(model.feature_importances_, index=X.columns)
 importances.plot(kind='barh', figsize=(12,8))
 
@@ -106,8 +110,5 @@ submission['Loan_ID']=test_original['Loan_ID']
 
 submission['Loan_Status'].replace(0, 'N',inplace=True)
 submission['Loan_Status'].replace(1, 'Y',inplace=True)
-
-pd.DataFrame(submission, columns=['Loan_ID','Loan_Status']).to_csv('logistic.csv')
-
 
 plt.show()
